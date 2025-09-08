@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitea
+  namespace: gitea
+  labels:
+    app: gitea
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitea
+  template:
+    metadata:
+      labels:
+        app: gitea
+    spec:
+      containers:
+      - name: gitea
+        image: gitea/gitea:1.22.3
+        ports:
+        - containerPort: 3000
+          name: http
+        - containerPort: 22
+          name: ssh
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        env:
+        - name: USER_UID
+          value: "1000"
+        - name: USER_GID
+          value: "1000"
+        - name: GITEA__server__ROOT_URL
+          value: "http://gitea.local/"
+        - name: GITEA__database__DB_TYPE
+          value: "sqlite3"
+        - name: GITEA__database__PATH
+          value: "/data/gitea/gitea.db"
+
+        # 🔑 Admin bootstrap (added)
+        - name: GITEA__security__INSTALL_LOCK
+          value: "true"
+        - name: GITEA__security__SECRET_KEY
+          value: "supersecretkey"   # change this in production
+        - name: GITEA__admin__USER
+          value: "admin"
+        - name: GITEA__admin__PASSWD
+          value: "AdminPass123!"
+        - name: GITEA__admin__EMAIL
+          value: "admin@example.com"
+
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: gitea-data
+

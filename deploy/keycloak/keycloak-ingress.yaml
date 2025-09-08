@@ -2,8 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: keycloak-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+  namespace: keycloak
 spec:
   ingressClassName: traefik # Using k3s default Traefik Ingress Controller
   rules:

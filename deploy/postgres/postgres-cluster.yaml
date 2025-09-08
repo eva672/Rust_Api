@@ -13,4 +13,17 @@ spec:
   bootstrap:
     initdb:
       dataChecksums: true
-      database: appdb 
+      database: appdb
+      secret:
+        name: rust-api-db-secret
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rust-api-db-secret
+  namespace: cnpg
+type: Opaque
+stringData:
+  username: postgres
+  password: postgres
