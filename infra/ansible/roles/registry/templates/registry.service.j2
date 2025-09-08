@@ -1,0 +1,30 @@
+[Unit]
+Description=Docker Registry
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+ExecStart=/usr/bin/docker run --rm \
+  --name registry \
+  -p {{ registry_port }}:5000 \
+  -v /opt/registry/data:/var/lib/registry \
+  -v {{ registry_cert_path }}:/certs/registry.crt:ro \
+  -v {{ registry_key_path }}:/certs/registry.key:ro \
+  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.crt \
+  -e REGISTRY_HTTP_TLS_KEY=/certs/registry.key \
+  -e REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry \
+  registry:2
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+
+
+
+

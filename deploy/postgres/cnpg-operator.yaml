@@ -1,0 +1,17 @@
+# Install CloudNativePG operator via its published manifest
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cnpg
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cnpg-install
+  namespace: cnpg
+data:
+  install.sh: |
+    #!/bin/sh
+    set -e
+    kubectl apply -n cnpg -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.23/releases/cnpg-1.23.0.yaml --server-side
+

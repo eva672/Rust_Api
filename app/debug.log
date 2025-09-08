@@ -1,0 +1,139 @@
+   Compiling rust_api v0.1.0 (/home/eva/Projects/rust_api/app)
+warning: methods `realm_issuer_url` and `introspect_url` are never used
+  --> src/config.rs:39:12
+   |
+20 | impl AppConfig {
+   | -------------- methods in this implementation
+...
+39 |     pub fn realm_issuer_url(&self) -> String {
+   |            ^^^^^^^^^^^^^^^^
+...
+50 |     pub fn introspect_url(&self) -> String {
+   |            ^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: variants `Unauthorized`, `NotFound`, and `InternalServerError` are never constructed
+  --> src/error.rs:9:5
+   |
+4  | pub enum AppError {
+   |          -------- variants in this enum
+...
+9  |     Unauthorized,
+   |     ^^^^^^^^^^^^
+...
+12 |     NotFound,
+   |     ^^^^^^^^
+...
+15 |     InternalServerError,
+   |     ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `AppError` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: function `base64url_decode` is never used
+  --> src/jwt.rs:60:4
+   |
+60 | fn base64url_decode(input: &str) -> Result<Vec<u8>> {
+   |    ^^^^^^^^^^^^^^^^
+
+warning: function `verify_keycloak_jwt` is never used
+   --> src/jwt.rs:108:8
+    |
+108 | pub fn verify_keycloak_jwt(token: &str, cfg: &AppConfig) -> Result<Claims> {
+    |        ^^^^^^^^^^^^^^^^^^^
+
+warning: multiple fields are never read
+   --> src/jwt.rs:194:5
+    |
+193 | struct IntrospectionResponse {
+    |        --------------------- fields in this struct
+194 |     active: bool,
+    |     ^^^^^^
+195 |     sub: Option<String>,
+    |     ^^^
+196 |     username: Option<String>,
+    |     ^^^^^^^^
+197 |     exp: Option<u64>,
+    |     ^^^
+198 |     iat: Option<u64>,
+    |     ^^^
+199 |     iss: Option<String>,
+    |     ^^^
+200 |     aud: Option<serde_json::Value>,
+    |     ^^^
+201 |     scope: Option<String>,
+    |     ^^^^^
+
+warning: function `introspect_token` is never used
+   --> src/jwt.rs:204:8
+    |
+204 | pub fn introspect_token(token: &str, cfg: &AppConfig) -> Result<bool> {
+    |        ^^^^^^^^^^^^^^^^
+
+warning: struct `AuthUser` is never constructed
+ --> src/middleware/auth.rs:7:12
+  |
+7 | pub struct AuthUser {
+  |            ^^^^^^^^
+  |
+  = note: `AuthUser` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: function `auth_middleware` is never used
+  --> src/middleware/auth.rs:13:8
+   |
+13 | pub fn auth_middleware(
+   |        ^^^^^^^^^^^^^^^
+
+warning: fields `id`, `user_id`, `title`, `description`, and `completed` are never read
+  --> src/models/task.rs:19:9
+   |
+18 | pub struct NewTask {
+   |            ------- fields in this struct
+19 |     pub id: Uuid,
+   |         ^^
+20 |     pub user_id: Uuid,
+   |         ^^^^^^^
+21 |     pub title: String,
+   |         ^^^^^
+22 |     pub description: Option<String>,
+   |         ^^^^^^^^^^^
+23 |     pub completed: bool,
+   |         ^^^^^^^^^
+
+warning: fields `title`, `description`, and `completed` are never read
+  --> src/models/task.rs:28:9
+   |
+27 | pub struct TaskUpdate {
+   |            ---------- fields in this struct
+28 |     pub title: Option<String>,
+   |         ^^^^^
+29 |     pub description: Option<String>,
+   |         ^^^^^^^^^^^
+30 |     pub completed: Option<bool>,
+   |         ^^^^^^^^^
+
+warning: fields `id`, `email`, `password_hash`, and `role` are never read
+  --> src/models/user.rs:18:9
+   |
+17 | pub struct NewUser {
+   |            ------- fields in this struct
+18 |     pub id: Uuid,
+   |         ^^
+19 |     pub email: String,
+   |         ^^^^^
+20 |     pub password_hash: String,
+   |         ^^^^^^^^^^^^^
+21 |     pub role: String,
+   |         ^^^^
+
+warning: `rust_api` (bin "rust_api") generated 11 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 8.47s
+     Running `target/debug/rust_api`
+[2025-09-07T20:22:04Z INFO  rust_api] 🚀 Starting Rust API application...
+[2025-09-07T20:22:04Z INFO  rust_api::db] 🔌 Connecting to PostgreSQL database...
+[2025-09-07T20:22:04Z INFO  rust_api::db] 🔍 Database URL: postgresql:***:***@localhost:5432/appdb
+[2025-09-07T20:22:04Z INFO  rust_api::db] 🔍 Full DATABASE_URL: postgresql://rust_api_user:rust_api_password@localhost:5432/appdb
+[2025-09-07T20:22:38Z ERROR rust_api::db] ❌ Failed to connect to database: pool timed out while waiting for an open connection
+[2025-09-07T20:22:38Z ERROR rust_api] ❌ Failed to connect to database: Database connection failed: pool timed out while waiting for an open connection
+[2025-09-07T20:22:38Z ERROR rust_api] 💡 Make sure PostgreSQL is running and DATABASE_URL is set correctly
+Error: Database connection failed: pool timed out while waiting for an open connection

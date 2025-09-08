@@ -1,0 +1,41 @@
+[package]
+name = "rust_api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Minimal web framework
+warp = "0.3"
+tokio = { version = "1.20", features = ["macros", "rt-multi-thread"] }
+
+# Basic serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Environment variables
+dotenvy = "0.15"
+
+# HTTP client
+ureq = { version = "2.0", features = ["json"] }
+
+# Utilities
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["serde", "v4"] }
+lazy_static = "1.4"
+
+# Logging
+env_logger = "0.10"
+log = "0.4"
+
+# Database - using older version to avoid base64ct issue
+sqlx = { version = "0.6", features = [
+    "postgres",
+    "runtime-tokio-rustls",
+    "chrono",
+    "uuid",
+    "migrate",
+] }

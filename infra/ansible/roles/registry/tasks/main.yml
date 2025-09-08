@@ -1,0 +1,44 @@
+---
+- name: Ensure docker engine is installed for local registry
+  apt:
+    name: docker.io
+    state: present
+    update_cache: true
+
+- name: Ensure registry data directory exists
+  file:
+    path: /opt/registry
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Create systemd service for local registry
+  copy:
+    dest: /etc/systemd/system/registry.service
+    mode: '0644'
+    content: |
+      [Unit]
+      Description=Docker Registry
+      After=network-online.target docker.service
+      Wants=docker.service
+
+      [Service]
+      Restart=always
+      ExecStart=/usr/bin/docker run --rm --name registry \
+        -p 5000:5000 \
+        -v /opt/registry:/var/lib/registry \
+        registry:2
+      ExecStop=/usr/bin/docker stop registry
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Reload systemd and enable registry
+  systemd:
+    name: registry
+    daemon_reload: true
+    enabled: true
+    state: started
+
+

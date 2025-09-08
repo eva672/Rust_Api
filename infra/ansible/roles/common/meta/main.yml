@@ -1,0 +1,29 @@
+---
+galaxy_info:
+  author: Rust API Team
+  description: Common system configuration for K3s cluster
+  company: Local Development
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+  galaxy_tags:
+    - system
+    - kubernetes
+    - k3s
+
+dependencies: []
+
+
+
+
+
+
+
+
+
+
+

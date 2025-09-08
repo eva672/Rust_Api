@@ -1,0 +1,74 @@
+---
+- name: Check if k3s is installed
+  stat:
+    path: /usr/local/bin/k3s
+  register: k3s_bin
+
+- name: Download and install k3s (single node)
+  shell: |
+    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -
+  args:
+    creates: /usr/local/bin/k3s
+  when: not k3s_bin.stat.exists
+
+- name: Ensure kubeconfig directory exists
+  file:
+    path: /root/.kube
+    state: directory
+    mode: '0700'
+
+- name: Copy kubeconfig
+  copy:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: /root/.kube/config
+    remote_src: true
+    mode: '0600'
+
+- name: Create .kube directory for ubuntu user
+  file:
+    path: /home/ubuntu/.kube
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: '0755'
+
+- name: Copy kubeconfig to ubuntu user
+  copy:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: /home/ubuntu/.kube/config
+    owner: ubuntu
+    group: ubuntu
+    mode: '0600'
+    remote_src: yes
+
+- name: Update kubeconfig server address
+  replace:
+    path: /home/ubuntu/.kube/config
+    regexp: 'https://127.0.0.1:6443'
+    replace: 'https://{{ ansible_default_ipv4.address }}:6443'
+
+- name: Set KUBECONFIG environment variable
+  lineinfile:
+    path: /home/ubuntu/.bashrc
+    line: 'export KUBECONFIG=/home/ubuntu/.kube/config'
+    create: yes
+
+- name: Install kubectl
+  shell: |
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x kubectl
+    sudo mv kubectl /usr/local/bin/
+  become: yes
+
+- name: Verify K3s installation
+  command: kubectl get nodes
+  become_user: ubuntu
+  environment:
+    KUBECONFIG: /home/ubuntu/.kube/config
+  register: k3s_status
+  failed_when: false
+
+- name: Display K3s status
+  debug:
+    msg: "K3s cluster status: {{ k3s_status.stdout_lines }}"
+

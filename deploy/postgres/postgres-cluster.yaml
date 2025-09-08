@@ -1,0 +1,16 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: rust-api-db
+  namespace: cnpg
+spec:
+  instances: 1
+  storage:
+    size: 1Gi
+  superuserSecret:
+    name: rust-api-db-superuser
+  enableSuperuserAccess: true
+  bootstrap:
+    initdb:
+      dataChecksums: true
+      database: appdb 

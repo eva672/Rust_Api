@@ -1,0 +1,52 @@
+---
+- name: Configure K3s cluster with local registry
+  hosts: k3s_cluster
+  become: yes
+  gather_facts: yes
+  
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+  roles:
+    - role: common
+      tags: [common, system]
+    
+    - role: registry
+      tags: [registry, tls]
+      when: ansible_os_family == "Debian"
+    
+    - role: containerd
+      tags: [containerd, mirrors]
+      when: ansible_os_family == "Debian"
+    
+    - role: k3s
+      tags: [k3s, kubernetes]
+      when: ansible_os_family == "Debian"
+    
+    - role: offline_prep
+      tags: [offline, images]
+      when: ansible_os_family == "Debian"
+
+  post_tasks:
+    - name: Display cluster information
+      debug:
+        msg: |
+          K3s cluster is ready!
+          VM IP: {{ ansible_default_ipv4.address }}
+          Registry: https://{{ registry_fqdn }}
+          Kubeconfig: /home/ubuntu/.kube/config
+          
+          To access the cluster:
+          multipass shell {{ inventory_hostname }}
+          export KUBECONFIG=/home/ubuntu/.kube/config
+          kubectl get nodes
+
+
+
+
+
+
+

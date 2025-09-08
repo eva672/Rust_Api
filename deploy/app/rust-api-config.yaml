@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rust-api-config
+data:
+  APP_NAME: "Rust API Application"
+  LOG_LEVEL: "info"

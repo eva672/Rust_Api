@@ -1,0 +1,34 @@
+---
+- name: Ensure registries.yaml directory exists
+  file:
+    path: /etc/rancher/k3s
+    state: directory
+    mode: '0755'
+
+- name: Configure containerd mirrors for local registry
+  copy:
+    dest: /etc/rancher/k3s/registries.yaml
+    mode: '0644'
+    content: |
+      mirrors:
+        "localhost:5000":
+          endpoint:
+            - "http://127.0.0.1:5000"
+        "registry.local:5000":
+          endpoint:
+            - "http://127.0.0.1:5000"
+      configs:
+        "localhost:5000":
+          tls:
+            insecure_skip_verify: true
+        "registry.local:5000":
+          tls:
+            insecure_skip_verify: true
+  register: registries_cfg
+
+- name: Restart k3s if registries config changed
+  systemd:
+    name: k3s
+    state: restarted
+  when: registries_cfg.changed
+

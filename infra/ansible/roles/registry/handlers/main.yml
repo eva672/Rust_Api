@@ -1,0 +1,14 @@
+---
+- name: restart registry
+  systemd:
+    name: registry
+    state: restarted
+    daemon_reload: yes
+  become: yes
+
+
+
+
+
+
+

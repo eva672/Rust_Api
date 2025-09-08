@@ -1,0 +1,31 @@
+---
+- name: Provision base VM and install K3s + local registry
+  hosts: k3s
+  become: true
+  gather_facts: false
+  become_method: sudo
+  become_flags: -n
+  pre_tasks:
+    - name: Ensure apt cache is updated
+      raw: apt-get update -y
+      changed_when: false
+      failed_when: false
+      become: false
+
+    - name: Ensure Python is installed for Ansible
+      raw: apt-get install -y python3 python3-apt
+      changed_when: false
+      failed_when: false
+      become: false
+
+    - name: Gather facts now that Python is present
+      setup:
+  roles:
+    - role: common
+    - role: k3s
+    - role: registry
+    - role: containerd
+    - role: offline_prep
+      tags:
+        - offline_prep
+

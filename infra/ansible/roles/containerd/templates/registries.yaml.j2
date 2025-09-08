@@ -1,0 +1,25 @@
+mirrors:
+  {{ registry_fqdn }}:
+    endpoint:
+      - "https://{{ registry_fqdn }}"
+  docker.io:
+    endpoint:
+      - "https://{{ registry_fqdn }}"
+      - "https://registry-1.docker.io"
+
+configs:
+  {{ registry_fqdn }}:
+    tls:
+      cert_file: "{{ registry_cert_path }}"
+      key_file: "{{ registry_key_path }}"
+      ca_file: "{{ ca_cert_path }}"
+    auth:
+      username: ""
+      password: ""
+
+
+
+
+
+
+

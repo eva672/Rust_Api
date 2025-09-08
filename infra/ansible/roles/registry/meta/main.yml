@@ -1,0 +1,25 @@
+---
+galaxy_info:
+  author: Rust API Team
+  description: Local Docker registry with TLS
+  company: Local Development
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+  galaxy_tags:
+    - docker
+    - registry
+    - tls
+
+dependencies: []
+
+
+
+
+
+
+

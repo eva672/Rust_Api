@@ -1,0 +1,64 @@
+---
+- name: Ensure image list is present on controller
+  delegate_to: localhost
+  become: false
+  stat:
+    path: "{{ playbook_dir }}/../../../scripts/image-list.txt"
+  register: img_list
+
+- name: Read image list
+  delegate_to: localhost
+  become: false
+  slurp:
+    src: "{{ playbook_dir }}/../../../scripts/image-list.txt"
+  register: img_content
+  when: img_list.stat.exists
+
+- name: Set image list
+  set_fact:
+    images_to_mirror: "{{ (img_content.content | b64decode).split('\n') | map('trim') | select('match','^\\s*[^#].*') | list }}"
+  when: img_list.stat.exists
+
+- name: Show images to mirror (sanity check)
+  debug:
+    var: images_to_mirror
+
+- name: Login to local registry (no auth)
+  command: docker info
+  changed_when: false
+
+- name: Check local registry HTTP endpoint
+  shell: |
+    set -e
+    echo "[offline_prep] Checking local registry endpoint http://127.0.0.1:5000/v2/"
+    curl -sS -m 5 -f http://127.0.0.1:5000/v2/ && echo "[offline_prep] Registry reachable over HTTP"
+  register: registry_http_check
+  changed_when: false
+  failed_when: registry_http_check.rc != 0
+  args:
+    executable: /bin/bash
+
+- name: Mirror images to local registry
+  vars:
+    image_name: "{{ item }}"
+    image_basename: "{{ item.split('/')[-1] }}"
+  shell: |
+    set -euo pipefail
+    echo "[offline_prep] START image: {{ image_name }} -> localhost:5000/{{ image_basename }}"
+    echo "[offline_prep] Step 1/4: check if already mirrored"
+    if docker manifest inspect localhost:5000/{{ image_basename }} >/dev/null 2>&1; then
+      echo "[offline_prep] already exists in registry; skipping pull/tag/push"
+      exit 0
+    fi
+    echo "[offline_prep] Step 2/4: docker pull {{ image_name }}"
+    docker pull {{ image_name }}
+    echo "[offline_prep] Step 3/4: docker tag {{ image_name }} localhost:5000/{{ image_basename }} (HTTP registry)"
+    docker tag {{ image_name }} localhost:5000/{{ image_basename }}
+    echo "[offline_prep] Step 4/4: docker push localhost:5000/{{ image_basename }}"
+    docker push localhost:5000/{{ image_basename }}
+    echo "[offline_prep] DONE image: {{ image_name }}"
+  loop: "{{ images_to_mirror | default([]) }}"
+  args:
+    executable: /bin/bash
+
+
