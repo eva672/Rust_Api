@@ -1,1 +1,25 @@
-/target
+# Rust
+app/target/
+**/target/
+
+# Terraform
+infra/terraform/.terraform/
+**/.terraform/
+
+# Archives
+*.tar
+*.tar.gz
+*.zip
+
+# Logs
+*.log
+
+# Editor/OS
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Other large artifacts
+app/rust_api.tar
+certs/
